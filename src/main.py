@@ -1,5 +1,6 @@
 import wx
 import wx.lib.scrolledpanel
+import wx.grid as gridlib
 
 class Example_Menu(wx.Frame):
 
@@ -114,11 +115,11 @@ class ExampleCheckBoxesAndScrollBar(wx.Frame):
         panel2 = wx.lib.scrolledpanel.ScrolledPanel(self,-1, style=wx.SIMPLE_BORDER)
         panel2.SetupScrolling()
         panel2.SetBackgroundColour('#FFFFFF')
-        bSizer = wx.BoxSizer( wx.VERTICAL )
+        bSizer = wx.WrapSizer( wx.VERTICAL )
         pos_y = 0
         for i in range(50):
             pos_y += 20
-            cb = wx.CheckBox(panel2, label="sample checkbox", pos=(20, pos_y))
+            cb = wx.CheckBox(panel2, label="sample checkbox")
             bSizer.Add(cb, 0, wx.ALL, 5)
         panel2.SetSizer(bSizer)
 
@@ -206,7 +207,39 @@ class ExampleTabWithinTab(wx.Frame):
         sizer.Layout()
         return p
 
+class ExampleDivideWindow(wx.Frame):
+    class UpperPanel(wx.Panel):
+        def __init__(self, parent):
+            wx.Panel.__init__(self, parent=parent)
+    
+            grid = gridlib.Grid(self)
+            grid.CreateGrid(25,12)
+    
+            sizer = wx.BoxSizer(wx.VERTICAL)
+            sizer.Add(grid, 0, wx.EXPAND)
+            self.SetSizer(sizer)
+    
+    class LowerPanel(wx.Panel):
+        def __init__(self, parent):
+            wx.Panel.__init__(self, parent=parent)
+            txt = wx.TextCtrl(self)
 
+    def __init__(self, parent, title):
+        super(ExampleDivideWindow, self).__init__(parent, title=title)
+ 
+        splitter = wx.SplitterWindow(self)
+        up = self.UpperPanel(splitter)
+        low = self.LowerPanel(splitter)
+ 
+        # split the window
+        splitter.SplitHorizontally(up, low)
+        splitter.SetSashInvisible(True)
+        splitter.SetSashPosition(185, True)
+ 
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(splitter, 1, wx.EXPAND)
+        self.SetSizer(sizer)
+ 
 
 def main():
     app = wx.App()
@@ -215,7 +248,8 @@ def main():
     #ex = ExampleRenamer(None, title='Renamer')
     #ex = ExampleCheckBoxesAndScrollBar(None, title='Checkboxes')
     #ex = ExampleTabs(None, title='Tabs')
-    ex = ExampleTabWithinTab(None, title='Tabs')
+    #ex = ExampleTabWithinTab(None, title='Tabs')
+    ex = ExampleDivideWindow(None, title='Tabs')
     ex.Show()
     app.MainLoop()
 
